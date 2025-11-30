@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <title>Minhas Inscrições</title>
+    <link rel="stylesheet" href="../assets/css/style.css">
+    <script defer src="../assets/js/auth.js"></script>
+    <script defer src="../assets/js/eventos.js"></script>
+</head>
+
+<body>
+
+<header class="header">
+    <div class="logo">Portal de Eventos</div>
+    <nav class="nav">
+        <a href="home.html">Home</a>
+        <a href="minhas_inscricoes.html" class="active">Minhas Inscrições</a>
+        <a href="login.html">Login</a>
+    </nav>
+</header>
+
+<div class="form-container">
+    <h2>Minhas Inscrições</h2>
+</div>
+
+<!-- LISTA RENDERIZADA -->
+<div id="listaInscricoes"></div>
+
+<footer class="footer">
+    © 2025 Sistema de Eventos
+</footer>
+
+<script>
+    const user = obterUsuario();
+    if (!user) {
+        alert("Faça login para continuar.");
+        location.href = "login.html";
+    }
+</script>
+
+</body>
+</html>

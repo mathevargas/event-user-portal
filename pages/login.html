@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <title>Login - Portal de Eventos</title>
+    <link rel="stylesheet" href="../assets/css/style.css">
+    <script defer src="../assets/js/auth.js"></script>
+</head>
+
+<body>
+
+<header class="header">
+    <div class="logo">Portal de Eventos</div>
+    <nav class="nav">
+        <a href="home.html">Home</a>
+        <a href="login.html" class="active">Login</a>
+    </nav>
+</header>
+
+<div class="form-container">
+    <h2>Entrar</h2>
+
+    <div class="form-group">
+        <label for="email">Email</label>
+        <input type="email" id="email" placeholder="seu@email.com">
+    </div>
+
+    <div class="form-group">
+        <label for="senha">Senha</label>
+        <input type="password" id="senha" placeholder="•••••••">
+    </div>
+
+    <button id="btnLogin" class="btn-full">Entrar</button>
+</div>
+
+<footer class="footer">
+    © 2025 Sistema de Eventos
+</footer>
+
+<script>
+    // botão login
+    const btn = document.getElementById("btnLogin");
+
+    btn.onclick = async (e) => {
+        e.preventDefault();
+
+        // pegar campos
+        const email = document.getElementById("email").value.trim();
+        const senha = document.getElementById("senha").value.trim();
+
+        if (!email || !senha) {
+            alert("Preencha todos os campos.");
+            return;
+        }
+
+        // chamada login
+        const result = await realizarLogin(email, senha);
+
+        // erro geral
+        if (!result) {
+            alert("Credenciais inválidas.");
+            return;
+        }
+
+        // usuario novo
+        if (result.tipo === "novo") {
+            location.href = "cadastro.html";
+            return;
+        }
+
+        // criado na portaria sem senha
+        if (result.tipo === "precisa_completar") {
+            location.href = `completar_cadastro.html?email=${email}`;
+            return;
+        }
+
+        // login normal
+        location.href = "home.html";
+    };
+</script>
+
+</body>
+</html>

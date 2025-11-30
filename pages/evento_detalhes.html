@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <title>Detalhes do Evento</title>
+    <link rel="stylesheet" href="../assets/css/style.css">
+    <script defer src="../assets/js/auth.js"></script>
+    <script defer src="../assets/js/eventos.js"></script>
+</head>
+
+<body>
+
+<header class="header">
+    <div class="logo">Portal de Eventos</div>
+    <nav class="nav">
+        <a href="home.html">Home</a>
+        <a href="minhas_inscricoes.html">Minhas Inscrições</a>
+        <a href="login.html">Login</a>
+    </nav>
+</header>
+
+<div class="form-container">
+    <h2>Detalhes do Evento</h2>
+
+    <div id="eventoCard" class="event-card">
+        Carregando evento...
+    </div>
+
+    <button id="btnInscrever" class="btn-full" style="margin-top:14px;">
+        Inscrever-se
+    </button>
+</div>
+
+<footer class="footer">
+    © 2025 Sistema de Eventos
+</footer>
+
+<script>
+    const usuario = obterUsuario();
+    if (!usuario) {
+        alert("Faça login para continuar.");
+        location.href = "login.html";
+    }
+
+    // pega idEvento
+    const params = new URLSearchParams(location.search);
+    const idEvento = params.get("id");
+
+    const card = document.getElementById("eventoCard");
+    const btn = document.getElementById("btnInscrever");
+
+    async function carregarEvento() {
+        const resp = await fetch(`http://localhost:8082/eventos/${idEvento}`);
+        if (!resp.ok) {
+            card.innerHTML = "Evento não encontrado.";
+            btn.style.display = "none";
+            return;
+        }
+
+        const e = await resp.json();
+
+        card.innerHTML = `
+            <h3>${e.titulo}</h3>
+            <p><strong>Data:</strong> ${e.dataHora}</p>
+            <p><strong>Local:</strong> ${e.local}</p>
+            <p><strong>Descrição:</strong> ${e.descricao ?? "-"}</p>
+            <p><strong>Limite de vagas:</strong> ${e.limiteVagas}</p>
+            <p><strong>Status:</strong> ${e.status}</p>
+        `;
+
+        // evento fechado -> não mostra Inscrever
+        if (e.status !== "ABERTO") {
+            btn.style.display = "none";
+        }
+    }
+
+    // inscrição POST correto
+    btn.onclick = async () => {
+        const resp = await fetch(`http://localhost:8082/eventos/${idEvento}/inscrever`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+                email: usuario.email
+            })
+        });
+
+        const data = await resp.json();
+
+        if (!resp.ok) {
+            alert(data?.mensagem ?? "Erro ao inscrever.");
+            return;
+        }
+
+        alert("Inscrição realizada com sucesso.");
+        location.href = "minhas_inscricoes.html";
+    };
+
+    carregarEvento();
+</script>
+
+</body>
+</html>
