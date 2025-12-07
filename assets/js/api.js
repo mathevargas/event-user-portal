@@ -1,7 +1,6 @@
-// URLS das APIs (ajustar depois quando estiverem na VM)
-const AUTH_API = "http://localhost:8081";
-const EVENTS_API = "http://localhost:8082";
-const CERTIFICATES_API = "http://127.0.0.1:8000";
+CONFIG.AUTH_API
+CONFIG.EVENTS_API
+CONFIG.CERTIFICATES_API
 
 // Função padrão para requisições
 async function apiRequest(url, method = "GET", body = null, auth = false) {

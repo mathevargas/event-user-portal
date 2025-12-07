@@ -1,14 +1,18 @@
-// Carrega qualquer tela HTML da pasta pages
-function loadPage(page) {
-    const content = document.getElementById("content");
+// assets/js/router.js
 
-    fetch(`./${page}.html`)
-        .then(response => response.text())
-        .then(html => {
-            content.innerHTML = html;
-        })
-        .catch(err => {
-            content.innerHTML = "<h3>Erro ao carregar página.</h3>";
-            console.error(err);
-        });
+const routes = {
+    '/home': 'home.html',
+    '/login': 'login.html',
+    '/cadastro': 'cadastro.html',
+    '/validar_certificado': 'validar_certificado.html'
+};
+
+// Função de navegação simples
+function navigateTo(route) {
+    const page = routes[route];
+    if (page) {
+        window.location.href = page;
+    }
 }
+
+export { navigateTo };

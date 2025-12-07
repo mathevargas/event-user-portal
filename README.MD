@@ -1,298 +1,247 @@
-🟦 EVENT-USER-PORTAL — Portal do Participante (HTML + CSS + JavaScript)
-
-Este frontend é responsável por permitir o acesso dos usuários ao Sistema de Eventos.
-Consome diretamente os microserviços de autenticação, eventos e certificados.
-
-Faz parte da arquitetura de microfrontends/microsserviços proposta.
+EVENT-USER-PORTAL — Portal do Participante (HTML + CSS + JavaScript)
+Este frontend é responsável por permitir que os usuários acessem e interajam com o Sistema de Eventos.
+ Consome diretamente os microserviços responsáveis por autenticação, eventos e certificados.
+Faz parte da arquitetura de microserviços do Sistema de Eventos.
 
 1. Objetivo
+Disponibilizar um portal web para os participantes realizarem:
+Consulta de eventos
 
-Fornecer ao usuário final um portal funcional para:
 
-Visualizar eventos disponíveis
+Inscrição em eventos
 
-Realizar inscrições
 
-Acompanhar suas participações
+Acompanhamento de participações
 
-Emitir certificados
 
-Validar certificados gerados
+Emissão de certificados
 
-O portal não possui backend.
-Toda lógica de negócio é feita via APIs:
 
+Validação pública de certificados
+
+
+Não há backend próprio neste projeto.
+ Toda lógica de negócio é feita pelas APIs externas:
 AUTH API
+
 
 EVENTS API
 
+
 CERTIFICATES API
 
-(Posteriormente) GATE API para sincronização offline
+
 
 2. Tecnologias Utilizadas
-Tecnologia	Função
-HTML5	Interface
-CSS3	Estilos / layout
-JavaScript Vanilla	Lógica e consumo das APIs
-LocalStorage	Sessão do usuário
-Fetch API	Comunicação HTTP
-Microsserviços REST	Backend externo
+Tecnologia
+Finalidade
+HTML5
+Interface
+CSS3
+Estilização
+JavaScript (Vanilla)
+Lógica e integração com APIs
+Fetch API
+Comunicação HTTP
+LocalStorage
+Sessão no navegador
+Microsserviços REST
+Backend externo
 
-Importante: não há framework frontend (React/Vue/Angular).
-O professor solicitou JS puro.
+Requisito da disciplina: JS puro (sem frameworks).
 
 3. Estrutura do Projeto
 event-user-portal/
 │
-├── assets/
-│   ├── css/
-│   │   └── style.css
-│   └── js/
-│       ├── auth.js
-│       ├── eventos.js
-│       └── certificados.js
+├─ assets/
+│   ├─ css/
+│   │   └─ style.css
+│   └─ js/
+│       ├─ auth.js
+│       ├─ eventos.js
+│       └─ certificados.js
 │
-├── pages/
-│   ├── home.html
-│   ├── login.html
-│   ├── criar_conta.html
-│   ├── cadastro_completar.html
-│   ├── evento_detalhes.html
-│   ├── minhas_inscricoes.html
-│   ├── certificado.html
-│   ├── certificado_resultado.html
-│   └── validar_certificado.html
+├─ pages/
+│   ├─ home.html
+│   ├─ login.html
+│   ├─ criar_conta.html
+│   ├─ cadastro_completar.html
+│   ├─ evento_detalhes.html
+│   ├─ minhas_inscricoes.html
+│   ├─ certificado.html
+│   ├─ certificado_resultado.html
+│   └─ validar_certificado.html
 │
-└── README.md
+└─ README.md
 
 
-Cada tela é totalmente independente, carregada pelo navegador.
+4. Fluxo do Usuário
+Usuário acessa a página inicial
 
-4. Fluxo Geral do Portal
 
-Usuário acessa o portal
+Realiza login ou cadastro
 
-Visualiza eventos sem login.
 
-Efetua login
+Sessão é armazenada no navegador
 
-AUTH API retorna os dados do usuário
 
-Sessão salva no localStorage
+Usuário se inscreve em eventos
 
-Inscrição no evento
 
-O usuário logado acessa /evento_detalhes
+Consulta inscrições realizadas
 
-EVENTS API recebe email + ID do evento
 
-Acompanhamento
+Gera certificado caso tenha presença confirmada
 
-/minhas_inscricoes.html
 
-Lista todos os eventos inscritos
+Pode validar qualquer certificado pelo código
 
-Certificado
 
-Se status PRESENTE
-
-/certificado.html?idEvento=X
-
-CERTIFICATES API gera código único
-
-Validação pública
-
-/validar_certificado.html
-
-Qualquer pessoa pode validar
 
 5. Integração com APIs
 5.1 AUTH API
-
-Finalidade: login, cadastro, completar cadastro.
-
-Endpoints usados:
-
+Login, cadastro e completar cadastro
+Endpoints utilizados:
 POST /auth/login
+
 
 POST /auth/registrar
 
-PUT /auth/completar
+
+PATCH /auth/completar
+
 
 5.2 EVENTS API
-
-Finalidade: eventos e inscrições.
-
-Endpoints usados:
-
+Eventos e inscrições
+Endpoints utilizados:
 GET /eventos
+
 
 GET /eventos/{id}
 
+
 POST /eventos/{id}/inscrever
 
-GET /inscricoes/{email}
+
+GET /eventos/inscricoes/{email}
+
 
 5.3 CERTIFICATES API
-
-Finalidade: emissão e validação.
-
-Endpoints usados:
-
+Certificados
+Endpoints utilizados:
 POST /certificados/gerar
+
 
 GET /certificados/validar/{codigo}
 
+
+
 6. Telas Implementadas
-✔️ 6.1 home.html
-
-Lista eventos ativos
-
-Acesso público
-
-Botão “Detalhes”
-
-✔️ 6.2 login.html
-
-Campo email + senha
-
-Chama AUTH API
-
-Salva sessão local
-
-✔️ 6.3 criar_conta.html
-
+Tela
+Descrição
+Status
+home.html
+Listagem de eventos
+OK
+login.html
+Autenticação
+OK
+criar_conta.html
 Cadastro inicial
-
-Email + nome + senha
-
-✔️ 6.4 cadastro_completar.html
-
-Fluxo especial:
-
-usuário criado na portaria
-
-não possui senha
-
-Define senha + nome
-
-Salva nova conta
-
-✔️ 6.5 evento_detalhes.html
-
-Consulta eventos individuais
-
-Inscrição via POST
-
-✔️ 6.6 minhas_inscricoes.html
-
-Lista inscrições por email
-
-Mostra status
-
-Link para certificado (status PRESENTE)
-
-✔️ 6.7 certificado.html
-
-Recebe idEvento
-
-Chama CERTIFICATES API
-
-Gera código
-
-✔️ 6.8 certificado_resultado.html
-
-Visualiza informações do certificado
-
-Dados devolvidos pela API
-
-✔️ 6.9 validar_certificado.html
-
-Campo código
-
+OK
+cadastro_completar.html
+Finalizar cadastro criado pela portaria
+OK
+evento_detalhes.html
+Informação do evento e inscrição
+OK
+minhas_inscricoes.html
+Lista e status das inscrições
+OK
+certificado.html
+Emissão do certificado
+OK
+certificado_resultado.html
+Resultado da emissão
+OK
+validar_certificado.html
 Validação pública
+OK
 
-Sem necessidade de login
 
-7. Segurança (estado atual)
+7. Segurança (atual)
+Sessão armazenada em LocalStorage
 
-Controle simples de sessão via LocalStorage
 
-Navegação bloqueada em algumas telas:
+Acesso restrito em páginas sensíveis
 
-evento_detalhes
 
-minhas_inscricoes
+Ainda não implementado:
+JWT real
 
-certificado
 
-O que não existe neste frontend:
+Regras de acesso por perfil
 
-JWT
 
-Cookies
+Expiração de sessão
 
-Roles
 
-Middleware
-
-🔴 Segurança real virá na fase de integração final.
+Essas funcionalidades serão aplicadas na fase de integração final.
 
 8. Como Executar Localmente
-
-📌 Abrir a pasta do portal:
-
-Recomendado (VS Code):
-
-Open With Live Server
+No Visual Studio Code:
+Abrir a pasta do projeto
 
 
-Acessar:
+Clicar com o botão direito em pages/home.html
 
+
+Selecionar: Open With Live Server
+
+
+Acessar pelo navegador:
 http://127.0.0.1:5500/pages/home.html
 
-9. Testes Sem Backend
 
-Como o professor permite telas não integradas:
+9. Status do Projeto
+Função
+Situação
+Listagem de Eventos
+OK
+Login e Cadastro
+OK
+Inscrição
+OK
+Meus eventos
+OK
+Emissão de Certificados
+OK (MVP)
+Validação de Certificados
+OK (MVP)
+PDF real
+Em desenvolvimento
+JWT
+Em desenvolvimento
+Deploy na VM
+Em desenvolvimento
 
-Event data mockado
 
-Sem PDF real
+10. Próximas Etapas
+Adicionar JWT e bloqueio de rotas
 
-Sem JWT
 
-Telas abrem normalmente para apresentação.
+Habilitar download do certificado em PDF
 
-10. Status do Frontend
-Recurso	Status
-Listagem de Eventos	✔️
-Login	✔️
-Cadastro	✔️
-Finalizar Cadastro	✔️
-Inscrição	✔️
-Minhas inscrições	✔️
-Emissão de Certificado	✔️ MVP
-Validação de Certificado	✔️ MVP
-Responsividade	✔️ simples
-Integração Gate Offline	🔜
-PDF real (download)	🔜
-JWT	🔜
-Deploy VM	🔜
-11. Próximas Etapas (Enzo)
 
-Ajuste de CSS final
+Ajustes de layout final e responsividade
 
-Navbar definitiva (não a de teste)
 
-Integração JWT após todas APIs finalizadas
+Deploy na VM com integração total das APIs
 
-Integração com CERTIFICATES API (PDF)
 
-Integração com GATE API para sincronização offline
 
-12. Desenvolvido por
+11. Desenvolvido por
+Matheus Vargas — Frontend Web (Portal do Participante)
+ Implementação completa do fluxo online do usuário.
 
-Enzo Zambiasi — Portal do Usuário (MVP)
-Parte responsável pelo frontend completo do participante
-(Fluxo online do sistema)
+

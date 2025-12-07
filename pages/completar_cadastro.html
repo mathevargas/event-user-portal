@@ -4,40 +4,39 @@
     <meta charset="UTF-8">
     <title>Finalizar Cadastro</title>
     <link rel="stylesheet" href="../assets/css/style.css">
-    <script defer src="../assets/js/auth.js"></script>
-</head>
 
+    <script defer src="../assets/js/config.js"></script>
+    <script defer src="../assets/js/auth.js"></script>
+    <script defer src="../assets/js/security.js"></script>
+</head>
 <body>
 
 <header class="header">
     <div class="logo">Portal de Eventos</div>
-    <nav class="nav">
-        <a href="home.html">Home</a>
-        <a href="login.html">Login</a>
-    </nav>
+    <nav class="nav"></nav>
 </header>
 
 <div class="form-container">
     <h2>Finalizar Cadastro</h2>
 
     <div class="form-group">
-        <label for="email">Email</label>
+        <label>Email</label>
         <input id="email" disabled>
     </div>
 
     <div class="form-group">
-        <label for="nome">Nome</label>
+        <label>Nome</label>
         <input id="nome" placeholder="Seu nome completo">
     </div>
 
     <div class="form-group">
-        <label for="senha">Nova senha</label>
-        <input type="password" id="senha" placeholder="••••••••">
+        <label>Nova senha</label>
+        <input id="senha" type="password" placeholder="••••••••">
     </div>
 
     <div class="form-group">
-        <label for="senha2">Confirmar senha</label>
-        <input type="password" id="senha2" placeholder="••••••••">
+        <label>Confirmar senha</label>
+        <input id="senha2" type="password" placeholder="••••••••">
     </div>
 
     <button id="btnSalvar" class="btn-full">Salvar e entrar</button>
@@ -48,43 +47,36 @@
 </footer>
 
 <script>
-    // pegar email da url
-    const params = new URLSearchParams(location.search);
-    const emailParam = params.get("email");
+const emailParam = new URLSearchParams(window.location.search).get("email");
+document.getElementById("email").value = emailParam ?? "";
 
-    const inputEmail = document.getElementById("email");
-    const inputNome = document.getElementById("nome");
-    const inputSenha = document.getElementById("senha");
-    const inputSenha2 = document.getElementById("senha2");
-    const btn = document.getElementById("btnSalvar");
+document.getElementById("btnSalvar").onclick = async () => {
+    const nomeInput = document.getElementById("nome");
+    const senhaInput = document.getElementById("senha");
+    const senha2Input = document.getElementById("senha2");
 
-    inputEmail.value = emailParam;
+    const nomeVal = nomeInput.value.trim();
+    const s1 = senhaInput.value.trim();
+    const s2 = senha2Input.value.trim();
 
-    // salvar novo cadastro
-    btn.onclick = async () => {
-        const nome = inputNome.value.trim();
-        const s1 = inputSenha.value.trim();
-        const s2 = inputSenha2.value.trim();
+    if (!nomeVal || !s1 || !s2) {
+        alert("Preencha todos os campos.");
+        return;
+    }
 
-        if (!nome || !s1 || !s2) {
-            alert("Preencha todos os campos.");
-            return;
-        }
+    if (s1 !== s2) {
+        alert("As senhas não coincidem.");
+        return;
+    }
 
-        if (s1 !== s2) {
-            alert("As senhas não coincidem.");
-            return;
-        }
+    const resp = await completarCadastro(emailParam, nomeVal, s1);
+    if (!resp) {
+        alert("Erro ao completar cadastro.");
+        return;
+    }
 
-        const r = await completarCadastro(emailParam, nome, s1);
-
-        if (!r) {
-            alert("Erro ao completar cadastro.");
-            return;
-        }
-
-        location.href = "home.html";
-    };
+    window.location.href = "home.html";
+};
 </script>
 
 </body>

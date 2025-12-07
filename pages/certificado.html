@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <title>Emitir Certificado</title>
     <link rel="stylesheet" href="../assets/css/style.css">
+    <script defer src="../assets/js/config.js"></script>
     <script defer src="../assets/js/auth.js"></script>
     <script defer src="../assets/js/certificados.js"></script>
 </head>
@@ -12,19 +13,14 @@
 
 <header class="header">
     <div class="logo">Portal de Eventos</div>
-    <nav class="nav">
-        <a href="home.html">Home</a>
-        <a href="minhas_inscricoes.html">Minhas Inscrições</a>
-        <a href="login.html">Login</a>
-    </nav>
+    <nav class="nav"></nav>
 </header>
 
 <div class="form-container">
     <h2>Emitir Certificado</h2>
 
-    <!-- preenchido automaticamente pelo certificados.js -->
     <div class="form-group">
-        <label for="eventoId">Evento</label>
+        <label>Evento</label>
         <input id="eventoId" disabled>
     </div>
 
@@ -35,14 +31,41 @@
     © 2025 Sistema de Eventos
 </footer>
 
-<script>
-    // login obrigatório
-    const user = obterUsuario();
-    if (!user) {
-        alert("Faça login para continuar.");
-        location.href = "login.html";
-    }
-</script>
+</body><!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <title>Emitir Certificado</title>
+    <link rel="stylesheet" href="../assets/css/style.css">
+
+    <script defer src="../assets/js/config.js"></script>
+    <script defer src="../assets/js/auth.js"></script>
+    <script defer src="../assets/js/certificados.js"></script>
+    <script defer src="../assets/js/security.js"></script>
+</head>
+<body>
+
+<header class="header">
+    <div class="logo">Portal de Eventos</div>
+    <nav class="nav"></nav>
+</header>
+
+<div class="form-container">
+    <h2>Emitir Certificado</h2>
+
+    <div class="form-group">
+        <label>Evento</label>
+        <input id="eventoId" disabled>
+    </div>
+
+    <button id="btnGerar" class="btn-full">Emitir Certificado</button>
+</div>
+
+<footer class="footer">
+    © 2025 Sistema de Eventos
+</footer>
 
 </body>
+</html>
+
 </html>

@@ -1,17 +1,14 @@
-// Atualiza navbar dependendo do login
-function atualizarNavbar() {
-    const usuario = obterUsuario();
-    const loginBtn = document.getElementById("btnLogin");
-    const logoutBtn = document.getElementById("btnLogout");
+// assets/js/ui.js
 
-    if (usuario) {
-        loginBtn.style.display = "none";
-        logoutBtn.style.display = "inline-block";
-    } else {
-        loginBtn.style.display = "inline-block";
-        logoutBtn.style.display = "none";
-    }
+function mostrarMensagem(tipo, msg) {
+    const msgBox = document.createElement('div');
+    msgBox.className = `msg-box ${tipo}`;
+    msgBox.textContent = msg;
+    document.body.appendChild(msgBox);
+
+    setTimeout(() => {
+        msgBox.remove();
+    }, 3000);
 }
 
-// Aplicar em todas páginas automaticamente
-document.addEventListener("DOMContentLoaded", atualizarNavbar);
+export { mostrarMensagem };
