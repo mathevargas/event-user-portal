@@ -2,13 +2,11 @@ CONFIG.AUTH_API
 CONFIG.EVENTS_API
 CONFIG.CERTIFICATES_API
 
-// Função padrão para requisições
 async function apiRequest(url, method = "GET", body = null, auth = false) {
     const options = { method, headers: { "Content-Type": "application/json" } };
 
     if (body) options.body = JSON.stringify(body);
 
-    // Token salvo no navegador
     const token = localStorage.getItem("token");
 
     if (auth && token) {

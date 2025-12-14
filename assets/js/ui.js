@@ -1,5 +1,3 @@
-// assets/js/ui.js
-
 function mostrarMensagem(tipo, msg) {
     const msgBox = document.createElement('div');
     msgBox.className = `msg-box ${tipo}`;

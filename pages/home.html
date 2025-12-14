@@ -4,12 +4,13 @@
     <meta charset="UTF-8">
     <title>Portal de Eventos</title>
     <link rel="stylesheet" href="../assets/css/style.css">
+    <link rel="manifest" href="../manifest.webmanifest">
 
-    <script defer src="../assets/js/config.js"></script>
-    <script defer src="../assets/js/auth.js"></script>
-    <script defer src="../assets/js/eventos.js"></script>
-    <script defer src="../assets/js/sync.js"></script>
-    <script defer src="../assets/js/security.js"></script>
+    <script src="../assets/js/config.js"></script>
+    <script src="../assets/js/auth.js"></script>
+    <script src="../assets/js/security.js"></script>
+    <script src="../assets/js/pwa.js"></script>
+    <script src="../assets/js/eventos.js"></script>
 </head>
 <body>
 
@@ -21,17 +22,18 @@
 <section class="hero">
     <h2>Bem-vindo ao Portal de Eventos</h2>
     <p>Consulte eventos e participe.</p>
-
-    <div class="hero-buttons" style="margin-top: 25px;">
-        <button class="btn-outline" id="btnSync">Sincronizar offline</button>
-    </div>
 </section>
-
 <div id="listaEventos"></div>
 
 <footer class="footer">
     © 2025 Sistema de Eventos
+    
 </footer>
+
+<script>
+    atualizarNavbar();  
+    renderHome();       
+</script>
 
 </body>
 </html>

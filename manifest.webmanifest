@@ -1,0 +1,9 @@
+{
+  "name": "Portal de Eventos",
+  "short_name": "Eventos",
+  "start_url": "./pages/home.html",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#ffffff",
+  "icons": []
+}

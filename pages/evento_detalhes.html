@@ -1,36 +1,41 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-    <meta charset="UTF-8">
-    <title>Detalhes do Evento</title>
-    <link rel="stylesheet" href="../assets/css/style.css">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Detalhes do Evento</title>
 
-    <script defer src="../assets/js/config.js"></script>
-    <script defer src="../assets/js/auth.js"></script>
-    <script defer src="../assets/js/eventos.js"></script>
-    <script defer src="../assets/js/security.js"></script>
+  <link rel="stylesheet" href="../assets/css/style.css">
+  <link rel="manifest" href="../manifest.webmanifest">
+
+  <script defer src="../assets/js/config.js"></script>
+  <script defer src="../assets/js/auth.js"></script>
+  <script defer src="../assets/js/security.js"></script>
+  <script defer src="../assets/js/pwa.js"></script>
+  <script defer src="../assets/js/eventos.js"></script>
 </head>
-<body>
 
-<header class="header">
+<body>
+  <header class="header">
     <div class="logo">Portal de Eventos</div>
     <nav class="nav"></nav>
-</header>
+  </header>
 
-<div class="form-container">
+  <div class="form-container">
     <h2>Detalhes do Evento</h2>
 
-    <div id="eventoCard" class="event-card">Carregando...</div>
-
-    <div class="event-actions" style="margin-top:14px;">
-        <button id="btnInscrever" class="btn-full" style="display:none;">Inscrever</button>
-        <button id="btnCancelar" class="btn-danger" style="display:none;">Cancelar Inscrição</button>
+    <div id="eventoCard" class="event-card">
+      Carregando informações do evento...
     </div>
-</div>
 
-<footer class="footer">
+    <div class="event-actions" style="margin-top:18px; display:flex; gap:8px; justify-content:center;">
+      <button id="btnInscrever" class="btn-full" style="display:none;">Inscrever-se</button>
+      <button id="btnCancelar" class="btn-danger" style="display:none;">Cancelar inscrição</button>
+    </div>
+  </div>
+
+  <footer class="footer">
     © 2025 Sistema de Eventos
-</footer>
-
+  </footer>
 </body>
 </html>

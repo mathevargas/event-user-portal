@@ -1,6 +1,3 @@
-// assets/js/sync.js
-// Botão "Sincronizar offline" — simulação para o trabalho
-
 document.addEventListener("DOMContentLoaded", () => {
     const btn = document.getElementById("btnSync");
     if (!btn) return;

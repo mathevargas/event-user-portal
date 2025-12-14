@@ -1,136 +1,220 @@
-// assets/js/auth.js
-// Controle de sessão, login e navbar dinâmica
-
-// Base da AUTH API
 const AUTH_BASE = `${CONFIG.AUTH_API}/auth`;
 
-// ----------------------------
-// SESSÃO
-// ----------------------------
 function salvarSessao(dadosUsuario) {
-    // esperado: { id, nome, email, token }
-    localStorage.setItem("usuario", JSON.stringify(dadosUsuario));
+  localStorage.setItem("usuario", JSON.stringify(dadosUsuario));
 }
 
 function obterUsuario() {
-    const raw = localStorage.getItem("usuario");
-    return raw ? JSON.parse(raw) : null;
+  const raw = localStorage.getItem("usuario");
+  return raw ? JSON.parse(raw) : null;
 }
 
 function limparSessao() {
-    localStorage.removeItem("usuario");
+  localStorage.removeItem("usuario");
 }
 
 function logout() {
-    limparSessao();
-    window.location.href = "login.html";
+  limparSessao();
+  window.location.href = "login.html";
 }
 
-// ----------------------------
-// LOGIN
-// ----------------------------
+function authHeaderIfAny() {
+  const u = obterUsuario();
+  const h = {};
+  if (u?.token) h["Authorization"] = u.token.startsWith("Bearer ") ? u.token : `Bearer ${u.token}`;
+  return h;
+}
+
+function parseJwt(token) {
+  try {
+    const base64 = token.split(".")[1].replace(/-/g, "+").replace(/_/g, "/");
+    const jsonPayload = decodeURIComponent(
+      atob(base64)
+        .split("")
+        .map((c) => "%" + ("00" + c.charCodeAt(0).toString(16)).slice(-2))
+        .join("")
+    );
+    return JSON.parse(jsonPayload);
+  } catch {
+    return null;
+  }
+}
+
+function obterRole() {
+  const u = obterUsuario();
+  if (!u?.token) return null;
+
+  if (u.role) return u.role;
+  if (u.perfil) return u.perfil;
+
+  const payload = parseJwt(u.token);
+  return payload?.role || payload?.perfil || null;
+}
+
+function isPorteiroOuAdmin() {
+  const role = obterRole();
+  return role === "ADMIN" || role === "PORTEIRO";
+}
+
+function isPorteiroOnly() {
+  return obterRole() === "PORTEIRO";
+}
+
 async function realizarLogin(email, senha) {
+  try {
     const resp = await fetch(`${AUTH_BASE}/login`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email, senha })
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ email, senha }),
+      cache: "no-store",
     });
 
-    // ✅ 404 → usuário novo (não existe)
-    if (resp.status === 404) {
-        return { tipo: "novo" };
-    }
+    if (resp.status === 404) return { tipo: "novo" };
 
-    // ✅ 409 → precisa completar cadastro
-    if (resp.status === 409) {
+    if (!resp.ok) {
+      const txt = await resp.text().catch(() => "");
+      const lower = (txt || "").toLowerCase();
+
+      if (
+        resp.status === 409 ||
+        lower.includes("ativ") ||
+        lower.includes("sem senha") ||
+        lower.includes("ainda não") ||
+        lower.includes("completar")
+      ) {
         return { tipo: "precisa_completar" };
-    }
+      }
 
-    if (!resp.ok) {
-        return null;
+      return null;
     }
 
     const dados = await resp.json();
     salvarSessao(dados);
-
     return { tipo: "ok", dados };
+  } catch {
+    return null;
+  }
 }
 
-// ----------------------------
-// COMPLETAR CADASTRO
-// ----------------------------
 async function completarCadastro(email, nome, senha) {
-    const resp = await fetch(`${AUTH_BASE}/completar`, {
-        method: "PATCH",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email, nome, senha })
+  try {
+    if (!email) return null;
+
+    const r1 = await fetch(`${CONFIG.AUTH_API}/usuarios/por-email?email=${encodeURIComponent(email)}`, {
+      headers: {
+        ...authHeaderIfAny(),
+        "Cache-Control": "no-cache",
+        "Pragma": "no-cache",
+      },
+      cache: "no-store",
     });
 
-    if (!resp.ok) {
-        return null;
-    }
+    if (!r1.ok) return null;
 
-    const dados = await resp.json();
-    salvarSessao(dados);
-    return dados;
+    const u = await r1.json();
+    if (!u?.id) return null;
+
+    const r2 = await fetch(`${CONFIG.AUTH_API}/usuarios/${u.id}/completar`, {
+      method: "PATCH",
+      headers: {
+        "Content-Type": "application/json",
+        ...authHeaderIfAny(),
+        "Cache-Control": "no-cache",
+        "Pragma": "no-cache",
+      },
+      body: JSON.stringify({ nome, senha }),
+      cache: "no-store",
+    });
+
+    if (!r2.ok) return null;
+
+    const loginResp = await realizarLogin(email, senha);
+    if (!loginResp || loginResp.tipo !== "ok") return null;
+
+    return loginResp.dados;
+  } catch {
+    return null;
+  }
 }
 
-// ----------------------------
-// EXIGIR LOGIN (para páginas protegidas)
-// ----------------------------
 function exigirLogin() {
-    const usuario = obterUsuario();
-
-    if (!usuario || !usuario.token) {
-        alert("Sua sessão expirou ou você não está logado. Faça login novamente.");
-        window.location.href = "login.html";
-        return false;
-    }
-    return true;
+  const usuario = obterUsuario();
+  if (!usuario || !usuario.token) {
+    alert("Sua sessão expirou ou você não está logado.");
+    window.location.href = "login.html";
+    return false;
+  }
+  return true;
 }
 
-// ----------------------------
-// NAVBAR DINÂMICA
-// ----------------------------
+function exigirPorteiro() {
+  if (!exigirLogin()) return false;
+  if (!isPorteiroOuAdmin()) {
+    alert("Acesso negado: somente ADMIN/PORTEIRO.");
+    window.location.href = "home.html";
+    return false;
+  }
+  return true;
+}
+
 function atualizarNavbar() {
-    const usuario = obterUsuario();
-    const nav = document.querySelector(".nav");
-    if (!nav) return;
+  const usuario = obterUsuario();
+  const nav = document.querySelector(".nav");
+  if (!nav) return;
 
-    const path = window.location.pathname;
+  const path = window.location.pathname;
 
-    // limpa navbar
-    nav.innerHTML = "";
+  const link = (href, label) =>
+    `<a href="${href}" class="${path.endsWith("/" + href) || path.endsWith(href) ? "active" : ""}">${label}</a>`;
 
-    // Sempre visíveis
-    nav.innerHTML += `
-        <a href="home.html" class="${path.endsWith("home.html") ? "active" : ""}">Home</a>
-        <a href="validar_certificado.html" class="${path.endsWith("validar_certificado.html") ? "active" : ""}">Validar Certificado</a>
-    `;
+  nav.innerHTML = "";
 
-    if (usuario && usuario.token) {
-        // Usuário logado → mostra opções privadas
-        nav.innerHTML += `
-            <a href="minhas_inscricoes.html" class="${path.endsWith("minhas_inscricoes.html") ? "active" : ""}">Minhas Inscrições</a>
-            <a href="#" id="btnLogout">Sair</a>
-        `;
+  if (usuario?.token && isPorteiroOnly()) {
+    nav.innerHTML += link("portaria.html", "Portaria");
+    nav.innerHTML += `<a href="#" id="btnLogout">Sair</a>`;
+  } else {
+    nav.innerHTML += link("home.html", "Home");
+    nav.innerHTML += link("validar_certificado.html", "Validar Certificado");
+
+    if (usuario?.token) {
+      nav.innerHTML += link("minhas_inscricoes.html", "Minhas Inscrições");
+      nav.innerHTML += link("certificado.html", "Certificados");
+
+      if (isPorteiroOuAdmin()) {
+        nav.innerHTML += link("portaria.html", "Portaria");
+      }
+
+      nav.innerHTML += `<a href="#" id="btnLogout">Sair</a>`;
     } else {
-        // Visitante
-        nav.innerHTML += `
-            <a href="login.html" class="${path.endsWith("login.html") ? "active" : ""}">Login</a>
-            <a href="cadastro.html" class="${path.endsWith("cadastro.html") ? "active" : ""}">Criar Conta</a>
-        `;
+      nav.innerHTML += link("login.html", "Login");
+      nav.innerHTML += link("cadastro.html", "Criar Conta");
     }
+  }
 
-    // Ação do botão de logout
-    const btnLogout = document.getElementById("btnLogout");
-    if (btnLogout) {
-        btnLogout.onclick = (e) => {
-            e.preventDefault();
-            logout();
-        };
-    }
+  const btnLogout = document.getElementById("btnLogout");
+  if (btnLogout) {
+    btnLogout.onclick = (e) => {
+      e.preventDefault();
+      logout();
+    };
+  }
 }
 
-// Aplica navbar dinâmica em todas as páginas
-document.addEventListener("DOMContentLoaded", atualizarNavbar);
+document.addEventListener("DOMContentLoaded", () => {
+  const u = obterUsuario();
+  const path = window.location.pathname.toLowerCase();
+
+  if (u?.token && isPorteiroOnly()) {
+    const permitido =
+      path.endsWith("portaria.html") ||
+      path.endsWith("login.html") ||
+      path.endsWith("completar_cadastro.html");
+
+    if (!permitido) {
+      window.location.href = "portaria.html";
+      return;
+    }
+  }
+
+  atualizarNavbar();
+});

@@ -4,10 +4,11 @@
     <meta charset="UTF-8">
     <title>Finalizar Cadastro</title>
     <link rel="stylesheet" href="../assets/css/style.css">
+    <link rel="manifest" href="../manifest.webmanifest">
 
     <script defer src="../assets/js/config.js"></script>
     <script defer src="../assets/js/auth.js"></script>
-    <script defer src="../assets/js/security.js"></script>
+    <script src="../assets/js/pwa.js"></script>
 </head>
 <body>
 
@@ -39,7 +40,7 @@
         <input id="senha2" type="password" placeholder="••••••••">
     </div>
 
-    <button id="btnSalvar" class="btn-full">Salvar e entrar</button>
+    <button id="btnSalvar" type="button" class="btn-full">Salvar e entrar</button>
 </div>
 
 <footer class="footer">
@@ -50,33 +51,48 @@
 const emailParam = new URLSearchParams(window.location.search).get("email");
 document.getElementById("email").value = emailParam ?? "";
 
-document.getElementById("btnSalvar").onclick = async () => {
-    const nomeInput = document.getElementById("nome");
-    const senhaInput = document.getElementById("senha");
-    const senha2Input = document.getElementById("senha2");
+async function completarCadastro(email, nome, senha) {
+  const r1 = await fetch(`${CONFIG.AUTH_API}/usuarios/por-email?email=${encodeURIComponent(email)}&t=${Date.now()}`, { cache: "no-store" });
+  if (!r1.ok) {
+    console.error("❌ /usuarios/por-email falhou:", r1.status, await r1.text().catch(()=> ""));
+    return null;
+  }
+  const u = await r1.json(); // {id,nome,email}
+  if (!u?.id) return null;
 
-    const nomeVal = nomeInput.value.trim();
-    const s1 = senhaInput.value.trim();
-    const s2 = senha2Input.value.trim();
+  const r2 = await fetch(`${CONFIG.AUTH_API}/usuarios/${u.id}/completar?t=${Date.now()}`, {
+    method: "PATCH",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ nome, senha })
+  });
 
-    if (!nomeVal || !s1 || !s2) {
-        alert("Preencha todos os campos.");
-        return;
-    }
+  if (!r2.ok) {
+    console.error("❌ PATCH completar falhou:", r2.status, await r2.text().catch(()=> ""));
+    return null;
+  }
 
-    if (s1 !== s2) {
-        alert("As senhas não coincidem.");
-        return;
-    }
+  if (typeof login === "function") {
+    return await login(email, senha);
+  }
+  return true;
+}
 
-    const resp = await completarCadastro(emailParam, nomeVal, s1);
-    if (!resp) {
-        alert("Erro ao completar cadastro.");
-        return;
-    }
+document.getElementById("btnSalvar").addEventListener("click", async (e) => {
+  e.preventDefault();
 
-    window.location.href = "home.html";
-};
+  const nomeVal = document.getElementById("nome").value.trim();
+  const s1 = document.getElementById("senha").value.trim();
+  const s2 = document.getElementById("senha2").value.trim();
+
+  if (!emailParam) return alert("Email inválido.");
+  if (!nomeVal || !s1 || !s2) return alert("Preencha todos os campos.");
+  if (s1 !== s2) return alert("As senhas não coincidem.");
+
+  const resp = await completarCadastro(emailParam, nomeVal, s1);
+  if (!resp) return alert("Erro ao completar cadastro.");
+
+  window.location.href = "home.html";
+});
 </script>
 
 </body>

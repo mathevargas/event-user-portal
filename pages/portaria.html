@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <title>Portaria</title>
+  <link rel="stylesheet" href="../assets/css/style.css" />
+  <link rel="manifest" href="../manifest.webmanifest" />
+
+  <script src="../assets/js/config.js"></script>
+  <script src="../assets/js/auth.js"></script>
+  <script src="../assets/js/security.js"></script>
+  <script src="../assets/js/pwa.js"></script>
+
+  <script src="../assets/js/offline_db.js"></script>
+  <script src="../assets/js/portaria.js"></script>
+</head>
+<body>
+
+<header class="header">
+  <div class="logo">Portal de Eventos</div>
+  <nav class="nav"></nav>
+</header>
+
+<div class="form-container">
+  <div style="display:flex; justify-content:space-between; align-items:center; gap:10px;">
+    <h2 style="margin:0;">Portaria (Offline)</h2>
+    <button id="btnSync" class="btn-outline">Sincronizar</button>
+  </div>
+
+  <p id="statusRede" style="margin-top:10px;"></p>
+
+  <hr style="margin: 16px 0;" />
+
+  <h3>1) Cadastro rápido do participante</h3>
+  <div class="form-group">
+    <label>Nome</label>
+    <input id="p_nome" placeholder="Nome do participante" />
+  </div>
+  <div class="form-group">
+    <label>E-mail</label>
+    <input id="p_email" placeholder="email@exemplo.com" />
+  </div>
+  <button id="btnAddParticipante" class="btn-full">Salvar cadastro offline</button>
+
+  <hr style="margin: 16px 0;" />
+
+  <h3>2) Inscrição para o evento</h3>
+  <div class="form-group">
+    <label>Participante</label>
+    <select id="selParticipante"></select>
+  </div>
+  <div class="form-group">
+    <label>Evento</label>
+    <select id="selEvento"></select>
+  </div>
+  <button id="btnAddInscricao" class="btn-full">Salvar inscrição offline</button>
+
+  <hr style="margin: 16px 0;" />
+
+  <h3>3) Presença / Check-in</h3>
+  <div class="form-group">
+    <label>Participante</label>
+    <select id="selParticipante2"></select>
+  </div>
+  <div class="form-group">
+    <label>Evento</label>
+    <select id="selEvento2"></select>
+  </div>
+  <button id="btnAddPresenca" class="btn-full">Salvar presença offline</button>
+
+  <hr style="margin: 16px 0;" />
+
+  <h3>Pendências</h3>
+  <div id="pendenciasBox">Carregando...</div>
+</div>
+
+<footer class="footer">© 2025 Sistema de Eventos</footer>
+
+<script>
+  atualizarNavbar();
+  exigirPorteiro();
+  portariaInit();
+</script>
+
+</body>
+</html>

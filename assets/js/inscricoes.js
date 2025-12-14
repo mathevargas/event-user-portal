@@ -1,7 +1,5 @@
-// --- EVENTS API ---
 const INSCRICOES_API = "http://localhost:8082/eventos";
 
-// Inscrever usuário em evento
 async function inscreverUsuario(eventoId, userEmail) {
     const resp = await fetch(`${INSCRICOES_API}/${eventoId}/inscrever`, {
         method: "POST",
@@ -12,8 +10,7 @@ async function inscreverUsuario(eventoId, userEmail) {
     return resp.json();
 }
 
-// Buscar lista de inscrições do usuário
-async function carregarMinhasInscricoes(email) {
-    const resp = await fetch(`${INSCRICOES_API}/inscricoes/${email}`);
+async function carregarMinhasInscricoes(id) {
+    const resp = await fetch(`${INSCRICOES_API}/inscricoes/${id}`);
     return resp.json();
 }
